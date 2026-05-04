@@ -1,30 +1,24 @@
+import streamlit as st
 import requests
 import re
 
-def tim_facebook_id(link):
-    print(f"--- Đang đi tìm ID cho bạn đây... ---")
-    
-    # Giả vờ làm một người dùng bình thường để Facebook không đuổi ra
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-    }
-    
-    try:
-        # Robot đi lấy dữ liệu từ trang web về
-        response = requests.get(link, headers=headers)
-        noidung = response.text
-        
-        # Robot dùng kính lúp soi tìm dãy số sau chữ 'userID'
-        id_tim_duoc = re.search(r'"userID":"(\d+)"', noidung)
-        
-        if id_tim_duoc:
-            return id_tim_duoc.group(1)
-        else:
-            return "Hic, không tìm thấy rồi!"
-    except:
-        return "Lỗi rồi, bạn kiểm tra lại mạng nhé!"
+# Tạo tiêu đề cho trang web
+st.title("🕵️ Máy Dò ID Facebook Thần Kỳ")
+st.write("Dán link vào đây và mình sẽ tìm số ID giúp bạn!")
 
-# Phần để bạn nhập link
-link_fb = input("Dán link Facebook vào đây đi: ")
-ket_qua = tim_facebook_id(link_fb)
-print(f"Số ID bí mật là: {ket_qua}")
+# Tạo ô nhập liệu
+link_fb = st.text_input("Nhập link Facebook cá nhân:")
+
+if st.button("Bắt đầu tìm kiếm"):
+    if link_fb:
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        try:
+            response = requests.get(link_fb, headers=headers)
+            id_tim_duoc = re.search(r'"userID":"(\d+)"', response.text)
+            
+            if id_tim_duoc:
+                st.success(f"🎉 Tìm thấy rồi! ID là: {id_tim_duoc.group(1)}")
+            else:
+                st.error("Hic, không tìm thấy ID nào cả.")
+        except:
+            st.warning("Có lỗi xảy ra, kiểm tra lại link nhé!")
